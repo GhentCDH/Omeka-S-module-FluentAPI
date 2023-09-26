@@ -2,6 +2,8 @@
 
 namespace FluentAPI\Model;
 
+use FluentAPI\Model\FieldValue\Literal;
+
 class MediaValue implements ValueInterface
 {
     private string $source;
@@ -28,19 +30,6 @@ class MediaValue implements ValueInterface
             [
                 new Literal('dcterms:title', 'Title', $label),
                 'thumbnail-url' => $thumbnailUrl,
-            ]
-        );
-    }
-
-    public static function IIIFImageThumbnail(string $url, string $label, string $thumbnailService): static
-    {
-        return new static(
-            $url,
-            'iiif',
-            [
-                new Literal('dcterms:title', 'Title', $label),
-                'thumbnail-service' => $thumbnailService,
-                'thumbnail-size' => 512,
             ]
         );
     }
