@@ -15,24 +15,24 @@ class PropertyIdSaturator
     /**
      * @var Manager
      */
-    private $api;
+    private Manager $api;
 
     /**
      * @var array
      */
-    private $propertyIds = [];
-    private $resourceTemplateNames = [];
-    private $resourceClassNames = [];
+    private array $propertyIds = [];
+    private array $resourceTemplateNames = [];
+    private array $resourceClassNames = [];
 
     /**
      * @var ResourceTemplateRepresentation[]
      */
-    private $resourceTemplateByName = [];
+    private array $resourceTemplateByName = [];
 
     /**
      * @var ResourceClassRepresentation[]
      */
-    private $resourceClassByName = [];
+    private array $resourceClassByName = [];
 
     /**
      * PropertyIdSaturator constructor.
@@ -46,7 +46,7 @@ class PropertyIdSaturator
     /**
      * @param ItemRequest $request
      */
-    public function addResourceIds(ItemRequest $request)
+    public function addResourceIds(ItemRequest $request): void
     {
         // set resource template ID
         $resourceTemplateId = $request->getResourceTemplate();
@@ -111,7 +111,7 @@ class PropertyIdSaturator
      * @param ItemRequest $itemRequest
      * @return ItemRequest
      */
-    public function addResourceTemplateByName(string $name, ItemRequest $itemRequest)
+    public function addResourceTemplateByName(string $name, ItemRequest $itemRequest): ItemRequest
     {
         $resourceTemplate = $this->getResourceTemplateByName($name);
         $itemRequest->setResourceTemplate($resourceTemplate->id());
@@ -124,18 +124,12 @@ class PropertyIdSaturator
         return $itemRequest;
     }
 
-    /**
-     * @param ItemRequest $request
-     */
-    public function addPropertyIds(ItemRequest $request)
+    public function addPropertyIds(ItemRequest $request): void
     {
         $request->eachFieldValues([$this, 'addPropertyId']);
     }
 
-    /**
-     * @param FieldValue $value
-     */
-    public function addPropertyId(FieldValue $value)
+    public function addPropertyId(FieldValue $value): void
     {
         $value->setPropertyId($this->loadPropertyId($value->getTerm()));
     }
@@ -144,7 +138,7 @@ class PropertyIdSaturator
      * @param $id
      * @return string
      */
-    public function loadResourceTemplateName($id)
+    public function loadResourceTemplateName($id): string
     {
         if (!isset($this->resourceTemplateNames[$id])) {
             /** @var ResourceTemplateRepresentation $resourceTemplate */
