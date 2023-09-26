@@ -20,9 +20,14 @@ class ItemRepository extends AbstractRdfRepository implements ItemRepositoryInte
         return $this->setSearchParameter('site_id', $id);
     }
 
-    public function itemSetId(int $id): static
+    public function itemSetId(int|array $id): static
     {
         return $this->setSearchParameter('item_set_id', $id);
+    }
+
+    public function notItemSetId(int|array $id): static
+    {
+        return $this->setSearchParameter('not_item_set_id', $id);
     }
 
     public function siteAttachmentsOnly(bool $state): static
@@ -30,4 +35,8 @@ class ItemRepository extends AbstractRdfRepository implements ItemRepositoryInte
         return $this->setSearchParameter('site_attachments_only', $state);
     }
 
+    public function hasMedia(): static
+    {
+        return $this->setSearchParameter('has_media', True);
+    }
 }

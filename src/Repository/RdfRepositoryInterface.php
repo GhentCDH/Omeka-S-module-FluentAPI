@@ -14,4 +14,9 @@ interface RdfRepositoryInterface extends RepositoryInterface
     public function resourceClassLabel(string $label): static;
     public function ownerId(int $id): static;
     public function isPublic(bool $state): static;
+
+    public function modifiedBefore(string $date): static;
+    public function modifiedAfter(string $date): static;
+    public function createdBefore(string $date): static;
+    public function createdAfter(string $date): static;
 }

@@ -99,4 +99,25 @@ abstract class AbstractRdfRepository extends AbstractRepository implements RdfRe
         return $this->search($query);
     }
 
+    public function modifiedBefore(string $date): static
+    {
+        return $this->setSearchParameter('modified_before', $date);
+    }
+
+    public function modifiedAfter(string $date): static
+    {
+        return $this->setSearchParameter('modified_after', $date);
+    }
+
+    public function createdBefore(string $date): static
+    {
+        return $this->setSearchParameter('created_before', $date);
+    }
+
+    public function createdAfter(string $date): static
+    {
+        return $this->setSearchParameter('created_after', $date);
+    }
+
+
 }

@@ -158,7 +158,7 @@ abstract class AbstractRepository implements RepositoryInterface
         return $this->searchParameters[$parameter] ?? null;
     }
 
-    public function id(int|array $value): static
+    public function id(int|array|string $value): static
     {
         return $this->setSearchParameter('id', $value);
     }
