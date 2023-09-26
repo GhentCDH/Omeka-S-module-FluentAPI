@@ -189,6 +189,11 @@ class ItemRequest
         return isset($this->fields[$term]);
     }
 
+    public function getFields(): array
+    {
+        return $this->fields;
+    }
+
     /**
      * @param callable $func
      */
