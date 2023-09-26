@@ -2,44 +2,85 @@
 
 namespace FluentAPI\Model;
 
+use FluentAPI\Model\FieldValue\Literal;
+
 class FieldValue implements ValueInterface
 {
     private string $term;
-    private int $propertyId;
-    private string $type;
-    private string $id;
-    private string $label;
-    private string $value;
-    private string $language;
-    private string $resourceId;
+    private ?int $propertyId;
+    private ?string $type;
+    private ?string $id;
+    private ?string $label;
+    private ?string $value;
+    private ?string $language;
+    private ?string $resourceId;
+    private ?bool $isPublic;
+    /**
+     * @var array<string,FieldValue[]> $valueAnnotations
+     */
+    private array $valueAnnotations = [];
 
-    public static function entity(string $term, string $id, string $type = 'resource')
-    {
-        return new static(
-            $term,
-            null,
-            $type,
-            null,
-            null,
-            null,
-            null,
-            $id
-        );
+    public function __construct(
+        string $term,
+        ?int $propertyId = null,
+        ?string $type = null,
+        ?string $id = null,
+        ?string $label = null,
+        ?string $value = null,
+        ?string $language = null,
+        ?string $resourceId = null,
+        ?bool $isPublic = null,
+    ) {
+        $this->term = $term;
+        $this->propertyId = $propertyId;
+        $this->type = $type;
+        $this->id = $id;
+        $this->label = $label;
+        $this->value = $value;
+        $this->language = $language;
+        $this->resourceId = $resourceId;
+        $this->isPublic = $isPublic;
     }
 
-    public static function literalsFromRdf(string $term, string $label, $rdf)
+    public static function fromPost(string $property, array $value): static
+    {
+        $fieldValue = new static(
+            $property,
+            $value['property_id'],
+            $value['type'],
+            $value['@id'] ?? null,
+            $value['property_label'] ?? null,
+            $value['@value'] ?? null,
+            $value['@language'] ?? null,
+            $value['value_resource_id'] ?? null,
+            $value['is_public'] ?? null
+        );
+
+        $annotations = [];
+        foreach($value['@annotation'] ?? [] as $annotationTerm => $annotationValues) {
+            $result = [];
+            foreach($annotationValues as $annotationValue) {
+                if (is_array($annotationValue) && isset($annotationValue['property_id'])) {
+                    $fieldValue->addValueAnnotation($annotationTerm, FieldValue::fromPost($annotationTerm, $annotationValue) );
+                }
+            }
+        }
+        return $fieldValue;
+    }
+
+    public static function literalsFromRdf(string $term, string $label, $rdf): array
     {
         if (!$rdf) {
             return [];
         }
 
         if (is_string($rdf)) {
-            return [self::literal($term, $label, $rdf)];
+            return [new Literal($term, $label, $rdf)];
         }
 
         if (isset($rdf['@language']) && isset($rdf['@value'])) {
             return [
-                self::literal(
+                new Literal(
                     $term,
                     $label,
                     $rdf['@value'],
@@ -51,7 +92,7 @@ class FieldValue implements ValueInterface
         $literals = [];
         foreach ($rdf as $value) {
             if (isset($value['@language']) && isset($value['@value'])) {
-                $literals[] = self::literal(
+                $literals[] = new Literal(
                     $term,
                     $label,
                     $value['@value'],
@@ -63,69 +104,9 @@ class FieldValue implements ValueInterface
         return $literals;
     }
 
-    public static function fromPost(string $property, array $value)
-    {
-        return new static(
-            $property,
-            $value['property_id'],
-            $value['type'],
-            $value['@id'] ?? null,
-            $value['o:label'] ?? null,
-            $value['@value'] ?? null,
-            $value['@language'] ?? null,
-            $value['value_resource_id'] ?? null
-        );
-    }
-
-    public static function literal(string $term, string $label, string $value, string $language = null)
-    {
-        return new static(
-            $term,
-            null,
-            'literal',
-            null,
-            $label,
-            $value,
-            $language
-        );
-    }
-
-    public static function url(string $term, string $label, string $url, string $language = null)
-    {
-        return new static(
-            $term,
-            null,
-            'uri',
-            $url,
-            $label,
-            null,
-            $language
-        );
-    }
-
-    public function setPropertyId(int $id)
+    public function setPropertyId(int $id): void
     {
         $this->propertyId = $id;
-    }
-
-    public function __construct(
-        string $term,
-        int $propertyId = null,
-        string $type = null,
-        string $id = null,
-        string $label = null,
-        string $value = null,
-        string $language = null,
-        string $resourceId = null
-    ) {
-        $this->term = $term;
-        $this->propertyId = $propertyId;
-        $this->type = $type;
-        $this->id = $id;
-        $this->label = $label;
-        $this->value = $value;
-        $this->language = $language;
-        $this->resourceId = $resourceId;
     }
 
     public function getTerm(): string
@@ -133,27 +114,48 @@ class FieldValue implements ValueInterface
         return $this->term;
     }
 
-    public function getId()
+    public function getId(): ?string
     {
         return $this->id;
     }
 
-    public function getValue()
+    public function getValue(): string
     {
         return $this->value ?? '';
     }
 
-    public function getLabel()
+    public function getLabel(): ?string
     {
         return $this->label;
     }
 
-    public function export()
+    public function getValueAnnotations(): array
+    {
+        return $this->valueAnnotations;
+    }
+
+    public function isPublic(): ?bool
+    {
+        return $this->isPublic;
+    }
+
+    public function addValueAnnotation(string $term, ValueInterface $annotation): static
+    {
+        $this->valueAnnotations[$term] = $this->valueAnnotations[$term] ?? [];
+        $this->valueAnnotations[$term][] = $annotation;
+
+        return $this;
+    }
+
+    public function export(): array
     {
         $data = [];
+//        $data['property_term'] = $this->term;
+
         if ($this->propertyId) {
             $data['property_id'] = (int)$this->propertyId;
         }
+
         if ($this->type) {
             $data['type'] = $this->type;
         }
@@ -173,9 +175,21 @@ class FieldValue implements ValueInterface
         if ($this->value) {
             $data['@value'] = $this->value;
         }
-//        if ($this->language) {
-            $data['o:label'] = $this->label;
-//        }
+
+        if ($this->isPublic !== null) {
+            $data['is_public'] = $this->isPublic ? '1' : '0';
+        }
+
+        if ($this->label) {
+            $data['property_label'] = $this->label;
+        }
+
+        if ($this->valueAnnotations) {
+            foreach($this->valueAnnotations as $term => $values) {
+                $data['@annotation'][$term] = array_map(fn($value) => $value->export(), $values);
+            }
+        }
+
         return $data;
     }
 }
