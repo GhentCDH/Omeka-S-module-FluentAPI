@@ -6,16 +6,16 @@ use Omeka\Api\Representation\AbstractResourceEntityRepresentation;
 
 class ItemRequest
 {
-    private int $id;
-    private string $resourceTemplate;
-    private string $resourceClass;
+    private ?int $id;
+    private ?string $resourceTemplate;
+    private ?string $resourceClass;
     /**
      * @var FieldValue[][]
      */
-    private $fields;
-    private string $source;
-    private string $resourceTemplateName;
-    private string $resourceClassName;
+    private array $fields;
+    private array $source;
+    private ?string $resourceTemplateName;
+    private ?string $resourceClassName;
 
     /**
      * @var MediaValue[]
@@ -65,8 +65,8 @@ class ItemRequest
             array_reduce(array_keys($data), function ($acc, $key) use ($data) {
                 if (
                     strpos($key, ':') !== -1 &&
-                    strpos($key, 'o:') !== 0 &&
-                    strpos($key, '@') !== 0 &&
+                    !str_starts_with($key, 'o:') &&
+                    !str_starts_with($key, '@') &&
                     is_array($data[$key])
                 ) {
                     $values = [];
@@ -85,7 +85,7 @@ class ItemRequest
         );
     }
 
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
@@ -126,7 +126,7 @@ class ItemRequest
             $data['o:media'] = $data['o:media'] ?? [];
             foreach ($this->media as $value) {
                 $data['o:media'][] = $value->export();
-        }
+            }
         }
 
         foreach ($this->source as $key => $value) {
@@ -137,35 +137,35 @@ class ItemRequest
         return $data;
     }
 
-    public function removeSource(string $term)
+    public function removeProperty(string $term): void
     {
-        if ($this->hasSource($term)) {
+        if ($this->hasProperty($term)) {
             $this->source[$term] = null;
             unset($this->source[$term]);
         }
     }
 
-    public function hasSource(string $term): bool
+    public function hasProperty(string $term): bool
     {
         return isset($this->source[$term]);
     }
     
-    public function addSource(string $term, $value)
+    public function addProperty(string $term, $value)
     {
-        if (!$this->hasSource($term)) {
+        if (!$this->hasProperty($term)) {
 	        $this->source[$term] = $value;
 	    }
     	return $this;
     }
 
-    public function setSource(string $term, $value)
+    public function setProperty(string $term, $value)
     {
         $this->source[$term] = $value;
     }
     
-    public function getSource(string $term)
+    public function getProperty(string $term)
     {
-        if (!$this->hasSource($term)) return null;
+        if (!$this->hasProperty($term)) return null;
         return $this->source[$term];
     }    
 

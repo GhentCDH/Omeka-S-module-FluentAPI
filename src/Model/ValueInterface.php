@@ -5,5 +5,5 @@ namespace FluentAPI\Model;
 
 interface ValueInterface
 {
-    public function export();
+    public function export(): array;
 }

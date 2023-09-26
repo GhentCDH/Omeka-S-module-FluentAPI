@@ -9,9 +9,9 @@ class Module extends AbstractModule
 {
     const NAMESPACE = __NAMESPACE__;
 
-    private $config;
+    private array $config = [];
 
-    public function getConfig()
+    public function getConfig(): array
     {
         if ($this->config) {
             return $this->config;
@@ -24,5 +24,4 @@ class Module extends AbstractModule
 
         return $this->config;
     }
-
 }

@@ -4,24 +4,15 @@ namespace FluentAPI\Model;
 
 class MediaValue implements ValueInterface
 {
-    /**
-     * @var string
-     */
-    private $source;
-    /**
-     * @var string
-     */
-    private $ingester;
+    private string $source;
+    private string $ingester;
     /**
      * @var FieldValue[]
      */
-    private $values;
-    /**
-     * @var bool
-     */
-    private $isPublic;
+    private array $values;
+    private bool $isPublic;
 
-    public function __construct(string $source, string $ingester, $values = [], $isPublic = true)
+    public function __construct(string $source, string $ingester, array $values = [], bool $isPublic = true)
     {
         $this->source = $source;
         $this->ingester = $ingester;
@@ -29,32 +20,32 @@ class MediaValue implements ValueInterface
         $this->isPublic = $isPublic;
     }
 
-    public static function IIIFImage(string $url, string $label, string $thumbnailUrl = null)
+    public static function IIIFImage(string $url, string $label, string $thumbnailUrl = null): static
     {
         return new static(
             $url,
             'iiif',
             [
-                FieldValue::literal('dcterms:title', 'Title', $label),
+                new Literal('dcterms:title', 'Title', $label),
                 'thumbnail-url' => $thumbnailUrl,
             ]
         );
     }
 
-    public static function IIIFImageThumbnail(string $url, string $label, string $thumbnailService)
+    public static function IIIFImageThumbnail(string $url, string $label, string $thumbnailService): static
     {
         return new static(
             $url,
             'iiif',
             [
-                FieldValue::literal('dcterms:title', 'Title', $label),
+                new Literal('dcterms:title', 'Title', $label),
                 'thumbnail-service' => $thumbnailService,
                 'thumbnail-size' => 512,
             ]
         );
     }
 
-    public function addField(FieldValue $fieldValue)
+    public function addField(FieldValue $fieldValue): void
     {
         $this->values[$fieldValue->getTerm()] = $fieldValue;
     }
@@ -64,7 +55,7 @@ class MediaValue implements ValueInterface
         return $this->values;
     }
 
-    public function export()
+    public function export(): array
     {
         $mediaItem = [];
 
