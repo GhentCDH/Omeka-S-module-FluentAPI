@@ -1,6 +1,7 @@
 <?php
 namespace FluentAPI;
 
+use FluentAPI\Repository\MediaRepository;
 use FluentAPI\Utility\PropertyIdSaturator;
 use FluentAPI\Repository\ItemRepository;
 use FluentAPI\Repository\ItemSetRepository;
@@ -22,6 +23,12 @@ return [
             },
             ItemRepository::class => function (ContainerInterface $c) {
                 return new ItemRepository(
+                    $c->get('Omeka\ApiManager'),
+                    $c->get(PropertyIdSaturator::class)
+                );
+            },
+            MediaRepository::class => function (ContainerInterface $c) {
+                return new MediaRepository(
                     $c->get('Omeka\ApiManager'),
                     $c->get(PropertyIdSaturator::class)
                 );
