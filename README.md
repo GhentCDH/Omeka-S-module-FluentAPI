@@ -9,7 +9,8 @@ The PHP API in Omeka-S allows you to perform CRUD operations on resources. For e
 ```php
 // Where $services is Omeka's service locator object.
 $api = $services->get('Omeka\ApiManager');
-$data = ['fulltext_search' => 'omeka', 'sort_by' => 'dcterms:title', 'sort_order' => 'asc', 'is_public' => 1];
+$data = ['fulltext_search' => 'omeka', 'sort_by' => 'dcterms:title', 
+            'sort_order' => 'asc', 'is_public' => 1];
 $response = $api->search('items', $data);
 $content = $response->getContent();
 ```
@@ -25,7 +26,9 @@ The FluentAPI module tries to solve some of these problems by allowing you to re
 // create a item repository instance
 $repo = $services->get('item_repository');
 // build the query
-$content = $repo->qb()->fullText('omeka')->isPublic(True)->sortBy('dcterms:title')->sortAsc()->search();
+$content = $repo->qb()->fullText('omeka')->isPublic(True)
+    ->sortBy('dcterms:title')->sortAsc()
+    ->search();
 ```
 
 Each Omeka request parameter or option is available as chainable method to a repository object.  
