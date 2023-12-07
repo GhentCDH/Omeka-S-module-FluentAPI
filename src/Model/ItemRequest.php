@@ -150,7 +150,7 @@ class ItemRequest
         return isset($this->source[$term]);
     }
     
-    public function addProperty(string $term, $value)
+    public function addProperty(string $term, $value): self
     {
         if (!$this->hasProperty($term)) {
 	        $this->source[$term] = $value;
@@ -158,9 +158,10 @@ class ItemRequest
     	return $this;
     }
 
-    public function setProperty(string $term, $value)
+    public function setProperty(string $term, $value): self
     {
         $this->source[$term] = $value;
+        return $this;
     }
     
     public function getProperty(string $term)
@@ -172,12 +173,13 @@ class ItemRequest
     /**
      * @param string $term
      */
-    public function removeField(string $term)
+    public function removeField(string $term): self
     {
         if ($this->hasField($term)) {
             $this->fields[$term] = null;
             unset($this->fields[$term]);
         }
+        return $this;
     }
 
     /**
@@ -197,7 +199,7 @@ class ItemRequest
     /**
      * @param callable $func
      */
-    public function eachFieldValues(callable $func)
+    public function eachFieldValues(callable $func): void
     {
         foreach ($this->fields as $fields) {
             foreach ($fields as $field) {
@@ -309,7 +311,7 @@ class ItemRequest
      * @param string $term
      * @return FieldValue[]|null
      */
-    public function getValue(string $term)
+    public function getValue(string $term): ?array
     {
         if (!$this->hasField($term)) return null;
         return $this->fields[$term];

@@ -56,9 +56,7 @@ class FieldValue implements ValueInterface
             $value['is_public'] ?? null
         );
 
-        $annotations = [];
         foreach($value['@annotation'] ?? [] as $annotationTerm => $annotationValues) {
-            $result = [];
             foreach($annotationValues as $annotationValue) {
                 if (is_array($annotationValue) && isset($annotationValue['property_id'])) {
                     $fieldValue->addValueAnnotation($annotationTerm, FieldValue::fromPost($annotationTerm, $annotationValue) );

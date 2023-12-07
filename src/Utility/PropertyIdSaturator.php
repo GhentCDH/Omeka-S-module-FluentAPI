@@ -68,7 +68,7 @@ class PropertyIdSaturator
      * @param string $term
      * @return mixed|ResourceClassRepresentation
      */
-    public function getResourceClassByTerm(string $term)
+    public function getResourceClassByTerm(string $term): ?ResourceClassRepresentation
     {
         if (!isset($this->resourceClassByName[$term])) {
             $response = $this->api
@@ -89,7 +89,7 @@ class PropertyIdSaturator
      * @param string $name
      * @return mixed|ResourceTemplateRepresentation
      */
-    public function getResourceTemplateByName(string $name)
+    public function getResourceTemplateByName(string $name): ?ResourceTemplateRepresentation
     {
         if (!isset($this->resourceTemplateByName[$name])) {
             $response = $this->api
@@ -164,7 +164,7 @@ class PropertyIdSaturator
      * @param $id
      * @return mixed|string
      */
-    public function loadResourceClassName($id)
+    public function loadResourceClassName($id): string
     {
         if (!isset($this->resourceClassNames[$id])) {
             /** @var ResourceClassRepresentation $resourceClass */
