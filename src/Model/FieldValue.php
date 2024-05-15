@@ -7,7 +7,7 @@ use FluentAPI\Model\FieldValue\Literal;
 class FieldValue implements ValueInterface
 {
     private string $term;
-    private ?int $propertyId;
+    private string|int|null $propertyId;
     private ?string $type;
     private ?string $id;
     private ?string $label;
@@ -22,7 +22,7 @@ class FieldValue implements ValueInterface
 
     public function __construct(
         string $term,
-        ?int $propertyId = null,
+        string|int|null $propertyId = null,
         ?string $type = null,
         ?string $id = null,
         ?string $label = null,
@@ -102,7 +102,7 @@ class FieldValue implements ValueInterface
         return $literals;
     }
 
-    public function setPropertyId(int $id): void
+    public function setPropertyId(int|string $id): void
     {
         $this->propertyId = $id;
     }
@@ -148,10 +148,9 @@ class FieldValue implements ValueInterface
     public function export(): array
     {
         $data = [];
-//        $data['property_term'] = $this->term;
 
         if ($this->propertyId) {
-            $data['property_id'] = (int)$this->propertyId;
+            $data['property_id'] = $this->propertyId === 'auto' ? 'auto' : (int) $this->propertyId;
         }
 
         if ($this->type) {
