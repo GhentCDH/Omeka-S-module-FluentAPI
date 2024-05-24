@@ -6,40 +6,22 @@ use FluentAPI\Model\FieldValue\Literal;
 
 class FieldValue implements ValueInterface
 {
-    private string $term;
-    private string|int|null $propertyId;
-    private ?string $type;
-    private ?string $id;
-    private ?string $label;
-    private ?string $value;
-    private ?string $language;
-    private ?string $resourceId;
-    private ?bool $isPublic;
     /**
      * @var array<string,FieldValue[]> $valueAnnotations
      */
     private array $valueAnnotations = [];
 
     public function __construct(
-        string $term,
-        string|int|null $propertyId = null,
-        ?string $type = null,
-        ?string $id = null,
-        ?string $label = null,
-        ?string $value = null,
-        ?string $language = null,
-        ?string $resourceId = null,
-        ?bool $isPublic = null,
+        private string $term,
+        private string|int|null $propertyId = null,
+        private ?string $type = null,
+        private ?string $id = null,
+        private ?string $label = null,
+        private ?string $value = null,
+        private ?string $language = null,
+        private ?string $resourceId = null,
+        private ?bool $isPublic = null,
     ) {
-        $this->term = $term;
-        $this->propertyId = $propertyId;
-        $this->type = $type;
-        $this->id = $id;
-        $this->label = $label;
-        $this->value = $value;
-        $this->language = $language;
-        $this->resourceId = $resourceId;
-        $this->isPublic = $isPublic;
     }
 
     public static function fromPost(string $property, array $value): static

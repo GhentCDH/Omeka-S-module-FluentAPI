@@ -134,11 +134,7 @@ class PropertyIdSaturator
         $value->setPropertyId($this->loadPropertyId($value->getTerm()));
     }
 
-    /**
-     * @param $id
-     * @return string
-     */
-    public function loadResourceTemplateName($id): string
+    public function loadResourceTemplateName(mixed $id): string
     {
         if (!isset($this->resourceTemplateNames[$id])) {
             /** @var ResourceTemplateRepresentation $resourceTemplate */
@@ -160,11 +156,7 @@ class PropertyIdSaturator
         return $this->resourceTemplateNames[$id];
     }
 
-    /**
-     * @param $id
-     * @return mixed|string
-     */
-    public function loadResourceClassName($id): string
+    public function loadResourceClassName(mixed $id): string
     {
         if (!isset($this->resourceClassNames[$id])) {
             /** @var ResourceClassRepresentation $resourceClass */
@@ -181,13 +173,10 @@ class PropertyIdSaturator
         return $this->resourceClassNames[$id];
     }
 
-    /**
-     * @param $term
-     * @return mixed
-     */
-    public function loadPropertyId($term)
+    public function loadPropertyId(string $term): int|string
     {
         if (!isset($this->propertyIds[$term])) {
+            /** @var PropertyRepresentation[] $propertyRepresentationResponse */
             $propertyRepresentationResponse = $this->api
                 ->search('properties', [
                     'term' => $term

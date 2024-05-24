@@ -1,6 +1,7 @@
 <?php
 namespace FluentAPI;
 
+use Laminas\Config\Config;
 use Laminas\Config\Factory;
 use Omeka\Module\AbstractModule;
 
@@ -11,7 +12,7 @@ class Module extends AbstractModule
 
     private array $config = [];
 
-    public function getConfig(): array
+    public function getConfig(): Config|array
     {
         if ($this->config) {
             return $this->config;
