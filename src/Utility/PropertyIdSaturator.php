@@ -6,6 +6,7 @@ use FluentAPI\Model\FieldValue;
 use FluentAPI\Model\ItemRequest;
 use LogicException;
 use Omeka\Api\Manager;
+use Omeka\Api\Representation\PropertyRepresentation;
 use Omeka\Api\Representation\ResourceClassRepresentation;
 use Omeka\Api\Representation\ResourceTemplateRepresentation;
 
@@ -131,7 +132,11 @@ class PropertyIdSaturator
 
     public function addPropertyId(FieldValue $value): void
     {
-        $value->setPropertyId($this->loadPropertyId($value->getTerm()));
+        if ( version_compare(\Omeka\Module::VERSION, '4', '<') ) {
+            $value->setPropertyId($this->loadPropertyId($value->getTerm()));
+        } else {
+            $value->setPropertyId('auto');
+        }
     }
 
     public function loadResourceTemplateName(mixed $id): string
