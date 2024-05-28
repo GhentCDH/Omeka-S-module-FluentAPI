@@ -6,6 +6,16 @@ use Omeka\Api\Response;
 
 abstract class AbstractRdfRepository extends AbstractRepository implements RdfRepositoryInterface
 {
+    public const SEARCH_TYPE_EQUALS = 'eq';
+    public const SEARCH_TYPE_CONTAINS = 'in';
+    public const SEARCH_TYPE_STARTS_WITH = 'sw';
+    public const SEARCH_TYPE_ENDS_WITH = 'ew';
+    public const SEARCH_TYPE_RESOURCE_ID = 'res';
+    public const SEARCH_TYPE_ANY_VALUE = 'ex';
+    public const JOIN_AND = 'and';
+    public const JOIN_OR = 'or';
+
+
     protected static function getResourceTemplate(): ?string
     {
         return null;
@@ -53,14 +63,24 @@ abstract class AbstractRdfRepository extends AbstractRepository implements RdfRe
         return $this->setSearchParameter('resource_class_label', $label);
     }
 
-    public function resourceClassId(?int $id): static
+    public function resourceClassId(int|array|null $id): static
     {
         return $this->setSearchParameter('resource_class_id', $id);
     }
 
-    public function resourceTemplateId(?int $id): static
+    public function resourceTemplateId(int|array|null $id): static
     {
         return $this->setSearchParameter('resource_template_id', $id);
+    }
+
+    public function resourceTemplateLabel(string|array|null $label): static
+    {
+        if (is_array($label)) {
+            $ids = array_map(fn($v) => $this->saturator->getResourceTemplateByName($v)->id(), $label);
+            return $this->setSearchParameter('resource_template_id', $ids);
+        } else {
+            return $this->setSearchParameter('resource_template_label', $label);
+        }
     }
 
     public function isPublic(?bool $state): static
