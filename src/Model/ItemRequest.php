@@ -170,9 +170,6 @@ class ItemRequest
         return $this->source[$term];
     }    
 
-    /**
-     * @param string $term
-     */
     public function removeField(string $term): self
     {
         if ($this->hasField($term)) {
@@ -182,10 +179,6 @@ class ItemRequest
         return $this;
     }
 
-    /**
-     * @param string $term
-     * @return bool
-     */
     public function hasField(string $term): bool
     {
         return isset($this->fields[$term]);
@@ -194,6 +187,51 @@ class ItemRequest
     public function getFields(): array
     {
         return $this->fields;
+    }
+
+    public function getField(string $term): ?array
+    {
+        if (!$this->hasField($term)) return null;
+        return $this->fields[$term];
+    }
+
+    public function setField(string $term, array $values): self
+    {
+        foreach ($values as $value) {
+            if (!$value instanceof FieldValue) {
+                throw new \InvalidArgumentException('$values must be of type ValueInterface[]');
+            }
+            if ($term !==  $value->getTerm()) {
+                throw new \InvalidArgumentException('$values must have the same term');
+            }
+        }
+
+        $this->fields[$term] = $values;
+        return $this;
+    }
+
+    public function addValues(array $values): self
+    {
+        foreach ($values as $value) {
+            $this->addValue($value);
+        }
+        return $this;
+    }
+
+    public function addValue(ValueInterface $value): self
+    {
+        if ($value instanceof FieldValue) {
+            $term = $value->getTerm();
+            if (!$this->hasField($term)) {
+                $this->fields[$term] = [];
+            }
+            $this->fields[$term][] = $value;
+        }
+        if ($value instanceof MediaValue) {
+            $this->media[] = $value;
+        }
+
+        return $this;
     }
 
     /**
@@ -215,33 +253,7 @@ class ItemRequest
         }
     }
 
-    public function addFields(array $values): self
-    {
-        foreach ($values as $value) {
-            $this->addField($value);
-        }
-        return $this;
-    }
 
-    /**
-     * @param ValueInterface $value
-     * @return ItemRequest
-     */
-    public function addField(ValueInterface $value): self
-    {
-        if ($value instanceof FieldValue) {
-            $term = $value->getTerm();
-            if (!$this->hasField($term)) {
-                $this->fields[$term] = [];
-            }
-            $this->fields[$term][] = $value;
-        }
-        if ($value instanceof MediaValue) {
-            $this->media[] = $value;
-        }
-
-        return $this;
-    }
 
     /**
      * @return string
@@ -310,6 +322,7 @@ class ItemRequest
     /**
      * @param string $term
      * @return FieldValue[]|null
+     * @deprecated use getField
      */
     public function getValue(string $term): ?array
     {
@@ -317,34 +330,5 @@ class ItemRequest
         return $this->fields[$term];
     }
 
-    /**
-     * @param FieldValue $value
-     * @return $this
-     */
-    public function overwriteSingleValue(FieldValue $value): self
-    {
-        $term = $value->getTerm();
-        if (!$this->hasField($term)) return $this;
-        $this->fields[$term] = [$value];
-        return $this;
-    }
-
-    public function overwriteValue(array $values): self
-    {
-        $term = null;
-        foreach ($values as $value) {
-            if (!$value instanceof FieldValue) {
-                throw new \InvalidArgumentException('$values must be of type ValueInterface[]');
-            }
-            if (!$term) {
-                $term = $value->getTerm();
-            } else if ($term !==  $value->getTerm()) {
-                throw new \InvalidArgumentException('$values must have the same term');
-            }
-        }
-        if (!$this->hasField($term)) return $this;
-        $this->fields[$term] = $values;
-        return $this;
-    }
 
 }
